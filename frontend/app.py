@@ -29,12 +29,11 @@ if not ai_tools:
     st.warning("No new AI tools found for the past week.")
 else:
     for tool in ai_tools:
-        st.subheader(tool.get("category", "AI Tool") + ": " + tool.get("website", ""))
-        st.markdown(f"**Name:** {tool.get('name', 'N/A')}")
-        st.markdown(f"**Functionality:** {tool.get('summary', 'N/A')}")
-        st.markdown(f"**Key Features:**")
+        st.subheader(f"{tool.get('name', 'AI Tool')}")
+        st.markdown(f"**Summary:** {tool.get('summary', 'N/A')}")
+        st.markdown("**Key Features:**")
         for feat in tool.get("bullets", []):
             st.markdown(f"- {feat}")
-        st.markdown(f"**Pricing:** {tool.get('pricing', 'Unknown')}")
+        st.markdown(f"**Category:** {tool.get('category', 'AI Tool')}")
         st.markdown(f"**Website:** [{tool.get('website', '')}]({tool.get('website', '')})")
         st.markdown("---")

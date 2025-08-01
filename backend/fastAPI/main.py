@@ -1,7 +1,6 @@
 
 from fastapi import FastAPI, Request
 from pydantic import BaseModel
-from backend.tools.search_agent import SearchAgent
 from backend.workflow.workflow import Workflow
 from apscheduler.schedulers.background import BackgroundScheduler
 import json
@@ -9,9 +8,10 @@ import os
 
 app = FastAPI()
 
-# Instantiate agents and workflow
-search_agent = SearchAgent()
-workflow = Workflow(search_agent)
+
+# Instantiate workflow with path to weekly_ai_tools.json
+JSON_PATH = os.path.join(os.path.dirname(__file__), "weekly_ai_tools.json")
+workflow = Workflow(top_n_tools=5)
 
 RESULTS_PATH = os.path.join(os.path.dirname(__file__), "weekly_ai_tools.json")
 

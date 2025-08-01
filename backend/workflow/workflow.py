@@ -3,44 +3,59 @@
 from typing import List, Dict
 from langgraph.graph import StateGraph, START, END
 
+
+from backend.tools.article_url_extractor import extract_tool_names_llm
+from backend.tools.tool_ranker import get_top_tools
+from backend.tools.llm_summarizer import summarize_top_tools
 from backend.tools.search_agent import SearchAgent
-from backend.tools.extractor import extract_tool_info
 
-from backend.tools.llm_tool import summarize_tool_with_llm
 
-def make_search_node(search_agent):
-    def search_node(state: Dict) -> Dict:
-        state["search_results"] = search_agent.search_new_ai_tools()
+def make_search_articles_node(top_n_articles: int = 4):
+    def search_articles_node(state: Dict) -> Dict:
+        search_agent = SearchAgent()
+        results = search_agent.search_new_ai_tools()
+        # Get top N article URLs
+        urls = [r.get('url') for r in results if r.get('url')][:top_n_articles]
+        state["article_urls"] = urls
         return state
-    return search_node
+    return search_articles_node
 
-def make_extract_node():
-    def extract_node(state: Dict) -> Dict:
-        state["extracted_tools"] = [extract_tool_info(r) for r in state["search_results"]]
+def make_extract_tools_llm_node(top_n: int = 5):
+    def extract_tools_llm_node(state: Dict) -> Dict:
+        tool_names = extract_tool_names_llm(state["article_urls"])
+        from collections import Counter
+        ranked = Counter(tool_names).most_common(top_n)
+        state["top_tools"] = [name for name, _ in ranked]
         return state
-    return extract_node
+    return extract_tools_llm_node
 
-def make_llm_summarize_node():
-    def llm_summarize_node(state: Dict) -> Dict:
-        summaries = [summarize_tool_with_llm(tool) for tool in state["extracted_tools"]]
+def make_llm_summarize_top_tools_node():
+    def llm_summarize_top_tools_node(state: Dict) -> Dict:
+        summaries = summarize_top_tools(state["top_tools"])
         state["summaries"] = summaries
         return state
-    return llm_summarize_node
+    return llm_summarize_top_tools_node
 class Workflow:
-    def __init__(self, search_agent):
-        self.search_agent = search_agent
+    def __init__(self, top_n_articles: int = 4, top_n_tools: int = 5):
+        self.top_n_articles = top_n_articles
+        self.top_n_tools = top_n_tools
 
         graph = StateGraph(dict)
-        graph.add_node("search", make_search_node(self.search_agent))
-        graph.add_node("extract", make_extract_node())
-        graph.add_node("llm_summarize", make_llm_summarize_node())
+        graph.add_node("search_articles", make_search_articles_node(self.top_n_articles))
+        graph.add_node("extract_tools_llm", make_extract_tools_llm_node(self.top_n_tools))
+        graph.add_node("llm_summarize_top_tools", make_llm_summarize_top_tools_node())
 
-        graph.add_edge(START, "search")
-        graph.add_edge("search", "extract")
-        graph.add_edge("extract", "llm_summarize")
-        graph.add_edge("llm_summarize", END)
+        graph.add_edge(START, "search_articles")
+        graph.add_edge("search_articles", "extract_tools_llm")
+        graph.add_edge("extract_tools_llm", "llm_summarize_top_tools")
+        graph.add_edge("llm_summarize_top_tools", END)
 
         self.app = graph.compile()
+
+        graph_png = self.app.get_graph().draw_mermaid_png()
+        with open("workflow_graph.png", "wb") as f:
+            f.write(graph_png)
+        print("Graph saved as workflow_graph.png")
 
     def run(self) -> List[Dict]:
         initial_state = {}

@@ -27,7 +27,7 @@ class SearchAgent:
             return []
         data = response.json()
         return data.get("data", {}).get("webPages", {}).get("value", [])
-    def search_new_ai_tools(self, force_fetch: bool = False) -> List[Dict]:
+    def search_new_ai_tools(self) -> List[Dict]:
         """
         Uses LangSearch Web Search API to find new AI tools announced in the last 7 days.
         Returns a list of raw search results (dicts with 'url', 'name', 'snippet', etc.).
