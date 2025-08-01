@@ -5,3 +5,4 @@ streamlit
 pydantic
 langgraph
 langsearch
+tiktoken==0.5.1  
