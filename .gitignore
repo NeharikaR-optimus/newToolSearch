@@ -61,6 +61,12 @@ coverage.xml
 # Local config
 config.py
 
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+
 # Data and results
 *.db
 *.sqlite3
@@ -68,6 +74,7 @@ config.py
 *.json
 weekly_ai_tools.json
 last_fetch.json
+workflow_graph.png
 
 # OS files
 .DS_Store
@@ -75,3 +82,10 @@ Thumbs.db
 
 # Node
 node_modules/
+
+# Docker
+.dockerignore
+
+# Temporary files
+*.tmp
+*.temp

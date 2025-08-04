@@ -4,10 +4,10 @@ from typing import List, Dict
 from langgraph.graph import StateGraph, START, END
 
 
-from backend.tools.article_url_extractor import extract_tool_names_llm
-from backend.tools.tool_ranker import get_top_tools
-from backend.tools.llm_summarizer import summarize_top_tools
-from backend.tools.search_agent import SearchAgent
+from tools.article_url_extractor import extract_tool_names_llm
+from tools.tool_ranker import get_top_tools
+from tools.llm_summarizer import summarize_top_tools
+from tools.search_agent import SearchAgent
 
 
 def make_search_articles_node(top_n_articles: int = 4):

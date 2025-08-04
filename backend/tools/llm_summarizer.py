@@ -102,8 +102,8 @@ def make_llm_summarize_node():
 
 
 # New function: summarize top tools by searching and LLM summarization
-from backend.tools.search_agent import SearchAgent
-from backend.tools.extractor import extract_tool_info
+from .search_agent import SearchAgent
+from .extractor import extract_tool_info
 def summarize_top_tools(tool_names, search_agent=None, llm=None):
     """
     For each tool name, fetch details (single search call), then summarize with LLM (single call per tool).

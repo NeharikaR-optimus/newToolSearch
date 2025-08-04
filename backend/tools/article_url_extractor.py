@@ -1,5 +1,5 @@
 from typing import List
-from backend.tools.llm_summarizer import get_llm_tool_names_from_text
+from .llm_summarizer import get_llm_tool_names_from_text
 def extract_tool_names_llm(urls: List[str], timeout: int = 8) -> list:
     """
     Fetches all article texts, concatenates them, and uses a single LLM call to extract AI tool names.

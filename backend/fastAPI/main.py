@@ -1,7 +1,7 @@
 
 from fastapi import FastAPI, Request
 from pydantic import BaseModel
-from backend.workflow.workflow import Workflow
+from workflow.workflow import Workflow
 from apscheduler.schedulers.background import BackgroundScheduler
 import json
 import os

@@ -5,3 +5,8 @@ requests
 pydantic
 langgraph
 langchain-openai
+langchain-core
+gunicorn
+beautifulsoup4
+apscheduler
+tiktoken
