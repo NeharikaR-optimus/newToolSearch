@@ -5,9 +5,8 @@ import requests
 st.set_page_config(page_title="AI Tools Discovery Dashboard", page_icon="🤖")
 st.title("🤖 Weekly AI Tools Discovery Dashboard")
 
-# Update this URL with your Azure backend URL when deployed
-API_URL = "http://localhost:8000/weekly-ai-tools"
-# TODO: Replace with Azure URL like: "http://your-backend.eastus.azurecontainer.io:8000/weekly-ai-tools"
+# Azure backend URL - Container Instance deployment
+API_URL = "http://ai-tools.dwdwbef5fth7hwe7.eastus.azurecontainer.io:8000/weekly-ai-tools"
 
 st.info("This dashboard displays the latest AI tools discovered in the past week.")
 
