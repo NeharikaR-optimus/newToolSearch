@@ -29,33 +29,70 @@ class SearchAgent:
         return data.get("data", {}).get("webPages", {}).get("value", [])
     def search_new_ai_tools(self) -> List[Dict]:
         """
-        Uses LangSearch Web Search API to find new AI tools announced in the last 7 days.
+        Uses LangSearch Web Search API to find AI tools relevant for developers.
         Returns a list of raw search results (dicts with 'url', 'name', 'snippet', etc.).
         """
         import json
-        from datetime import datetime
-        now = datetime.now()
-        today = now.strftime("%B %Y")
-        query = f"new AI tool released {today} OR AI product launch {today} OR AI app launch {today}"
-        headers = {
-            "Authorization": f"Bearer {LANGSEARCH_API_KEY}",
-            "Content-Type": "application/json"
-        }
-        body = {
-            "query": query,
-            "freshness": "oneWeek",
-            "summary": True,
-            "count": 10
-        }
-        response = requests.post(LANGSEARCH_SEARCH_ENDPOINT, headers=headers, json=body)
-        if response.status_code == 429:
-            print("LangSearch rate limit hit, returning empty list.")
-            return []
-        if response.status_code != 200:
-            print("LangSearch error:", response.text)
-            response.raise_for_status()
-        data = response.json()
-        return data.get("data", {}).get("webPages", {}).get("value", [])
+        # Focus on developer-relevant AI tools and recent releases
+        queries = [
+            "new AI developer tools 2024 2025 programming coding",
+            "AI code generation tools GitHub Copilot alternatives",
+            "AI development tools machine learning MLOps",
+            "developer AI tools API libraries frameworks",
+            "coding assistant AI tools IDE extensions"
+        ]
+        
+        all_results = []
+        
+        for query in queries:
+            headers = {
+                "Authorization": f"Bearer {LANGSEARCH_API_KEY}",
+                "Content-Type": "application/json"
+            }
+            body = {
+                "query": query,
+                "freshness": "oneMonth",  # Look for recent tools
+                "summary": True,
+                "count": 5  # Fewer results per query to avoid rate limits
+            }
+            print(f"Searching with query: {query}")
+            
+            try:
+                response = requests.post(LANGSEARCH_SEARCH_ENDPOINT, headers=headers, json=body)
+                print(f"LangSearch response status: {response.status_code}")
+                
+                if response.status_code == 429:
+                    print("LangSearch rate limit hit, skipping this query.")
+                    continue
+                    
+                if response.status_code != 200:
+                    print(f"LangSearch error for query '{query}': {response.text}")
+                    continue
+                    
+                data = response.json()
+                results = data.get("data", {}).get("webPages", {}).get("value", [])
+                print(f"Query '{query}' returned {len(results)} results")
+                all_results.extend(results)
+                
+                # Add delay between requests to avoid rate limiting
+                time.sleep(1)
+                
+            except Exception as e:
+                print(f"Error with query '{query}': {e}")
+                continue
+        
+        print(f"Total search results collected: {len(all_results)}")
+        # Remove duplicates based on URL
+        unique_results = []
+        seen_urls = set()
+        for result in all_results:
+            url = result.get('url', '')
+            if url and url not in seen_urls:
+                seen_urls.add(url)
+                unique_results.append(result)
+        
+        print(f"Unique results after deduplication: {len(unique_results)}")
+        return unique_results[:15]  # Return top 15 unique results
 
     def llm_summarize_tool(self, name, snippets):
         """
@@ -67,7 +104,7 @@ class SearchAgent:
         """
         Force a new fetch and store the results to the given file.
         """
-        results = self.search_new_ai_tools(force_fetch=True)
+        results = self.search_new_ai_tools()
         import json
         with open(results_path, "w", encoding="utf-8") as f:
             json.dump({"results": results}, f, ensure_ascii=False, indent=2)

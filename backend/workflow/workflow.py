@@ -36,7 +36,7 @@ def make_llm_summarize_top_tools_node():
         return state
     return llm_summarize_top_tools_node
 class Workflow:
-    def __init__(self, top_n_articles: int = 4, top_n_tools: int = 5):
+    def __init__(self, top_n_articles: int = 8, top_n_tools: int = 8):
         self.top_n_articles = top_n_articles
         self.top_n_tools = top_n_tools
 
@@ -51,11 +51,6 @@ class Workflow:
         graph.add_edge("llm_summarize_top_tools", END)
 
         self.app = graph.compile()
-
-        graph_png = self.app.get_graph().draw_mermaid_png()
-        with open("workflow_graph.png", "wb") as f:
-            f.write(graph_png)
-        print("Graph saved as workflow_graph.png")
 
     def run(self) -> List[Dict]:
         initial_state = {}

@@ -26,7 +26,17 @@ def get_llm_tool_names_from_text(article_text: str) -> list:
         max_tokens=512,
     )
     prompt_template = ChatPromptTemplate.from_messages([
-        ("system", "You are an expert at extracting product names from articles. Extract a JSON list of unique AI tool names mentioned in the following text. Only return the list, no explanation."),
+        ("system", """You are an expert at extracting AI tool names that are relevant for developers and programmers. 
+        Extract a JSON list of unique AI tool names mentioned in the following text that would be useful for:
+        - Software development and programming
+        - Code generation and assistance
+        - Development workflows and DevOps
+        - API development and testing
+        - Machine learning and data science development
+        
+        Focus on tools like GitHub Copilot, ChatGPT, Claude, coding assistants, AI APIs, development platforms, etc.
+        Ignore generic consumer apps, social media tools, or non-developer focused applications.
+        Only return the JSON list, no explanation."""),
         ("user", "{article_text}")
     ])
     prompt = prompt_template.format(article_text=article_text[:12000])  # Truncate if too long
@@ -62,7 +72,15 @@ def make_llm_summarize_node():
         max_tokens=512,
     )
     prompt_template = ChatPromptTemplate.from_messages([
-        ("system", "You are an expert product analyst. Summarize the following tool as a JSON with 'summary' and 'bullets'."),
+        ("system", """You are an expert analyst of developer tools and AI technologies. 
+        Summarize the following AI tool with a focus on its relevance for developers, programmers, and technical teams.
+        
+        Return a JSON with:
+        - 'summary': 1-2 sentence summary highlighting developer benefits  
+        - 'bullets': 3-4 key features focused on development use cases
+        
+        Focus on aspects like: coding assistance, development workflow, API capabilities, integration options, 
+        technical features, productivity benefits for developers."""),
         ("user", "{tool_data}")
     ])
     def llm_summarize_node(state: Dict) -> Dict:
@@ -121,7 +139,15 @@ def summarize_top_tools(tool_names, search_agent=None, llm=None):
             max_tokens=512,
         )
     prompt_template = ChatPromptTemplate.from_messages([
-        ("system", "You are an expert product analyst. Summarize the following tool as a JSON with 'summary' and 'bullets'."),
+        ("system", """You are an expert analyst of developer tools and AI technologies. 
+        Summarize the following AI tool with a focus on its relevance for developers, programmers, and technical teams.
+        
+        Return a JSON with:
+        - 'summary': 1-2 sentence summary highlighting developer benefits
+        - 'bullets': 3-4 key features focused on development use cases
+        
+        Focus on aspects like: coding assistance, development workflow, API capabilities, integration options, 
+        technical features, productivity benefits for developers."""),
         ("user", "{tool_data}")
     ])
     summaries = []
