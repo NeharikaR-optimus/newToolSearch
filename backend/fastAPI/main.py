@@ -57,3 +57,76 @@ def get_weekly_ai_tools():
             return json.load(f)
     else:
         return {"results": []}
+
+@app.post("/trigger-workflow")
+def trigger_workflow_manually():
+    """
+    Manually trigger the workflow to search for AI tools.
+    """
+    try:
+        results = workflow.run()
+        with open(RESULTS_PATH, "w", encoding="utf-8") as f:
+            json.dump({"results": results}, f, ensure_ascii=False, indent=2)
+        return {"message": f"Workflow completed successfully. Found {len(results)} tools.", "results": results}
+    except Exception as e:
+        return {"error": str(e), "message": "Workflow failed"}
+
+@app.get("/debug-config")
+def debug_config():
+    """
+    Debug endpoint to check configuration and environment variables.
+    """
+    import config
+    return {
+        "langsearch_api_key_set": bool(config.LANGSEARCH_API_KEY),
+        "azure_openai_api_key_set": bool(config.AZURE_OPENAI_API_KEY),
+        "langsearch_endpoint": config.LANGSEARCH_SEARCH_ENDPOINT,
+        "azure_openai_endpoint": config.AZURE_OPENAI_ENDPOINT,
+        "results_file_exists": os.path.exists(RESULTS_PATH)
+    }
+
+@app.get("/sample-tools")
+def get_sample_tools():
+    """
+    Return sample AI tools data for testing the frontend.
+    """
+    return {
+        "results": [
+            {
+                "name": "Claude AI Desktop",
+                "summary": "Anthropic's Claude AI is now available as a desktop application for Windows and macOS, offering advanced conversational AI capabilities with improved context understanding and coding assistance.",
+                "bullets": [
+                    "Native desktop application for improved user experience",
+                    "Enhanced context window up to 200K tokens",
+                    "Advanced coding and analysis capabilities",
+                    "Offline mode for sensitive data processing"
+                ],
+                "category": "AI Assistant",
+                "website": "https://claude.ai"
+            },
+            {
+                "name": "OpenAI Sora Video Generator", 
+                "summary": "OpenAI's Sora is a revolutionary AI model that can generate realistic videos from text descriptions, supporting up to 60 seconds of high-quality footage.",
+                "bullets": [
+                    "Text-to-video generation with high fidelity",
+                    "Supports up to 60 seconds of video content", 
+                    "Multiple aspect ratios and resolutions",
+                    "Advanced understanding of physics and motion"
+                ],
+                "category": "Video Generation",
+                "website": "https://openai.com/sora"
+            },
+            {
+                "name": "Google Gemini 2.0",
+                "summary": "Google's latest Gemini 2.0 model offers enhanced multimodal capabilities with improved reasoning, coding, and real-time conversation features.",
+                "bullets": [
+                    "Multimodal AI with text, image, and audio processing",
+                    "Real-time conversation capabilities", 
+                    "Enhanced coding and mathematical reasoning",
+                    "Integration with Google Workspace tools"
+                ],
+                "category": "AI Model",
+                "website": "https://gemini.google.com"
+            }
+        ]
+    }
