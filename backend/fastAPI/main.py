@@ -3,11 +3,11 @@ from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from workflow.workflow import Workflow
 from apscheduler.schedulers.background import BackgroundScheduler
+from datetime import datetime, timedelta
 import json
 import os
 
 app = FastAPI()
-
 
 # Instantiate workflow with path to weekly_ai_tools.json
 JSON_PATH = os.path.join(os.path.dirname(__file__), "weekly_ai_tools.json")
@@ -16,14 +16,28 @@ workflow = Workflow(top_n_tools=5)
 RESULTS_PATH = os.path.join(os.path.dirname(__file__), "weekly_ai_tools.json")
 
 def run_and_store_weekly_results():
-    results = workflow.run()
-    with open(RESULTS_PATH, "w", encoding="utf-8") as f:
-        json.dump({"results": results}, f, ensure_ascii=False, indent=2)
+    """Run workflow and store results with timestamp"""
+    try:
+        results = workflow.run()
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        data = {
+            "results": results,
+            "last_updated": timestamp,
+            "total_tools": len(results)
+        }
+        with open(RESULTS_PATH, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        print(f"[{timestamp}] Workflow completed. Found {len(results)} tools.")
+    except Exception as e:
+        print(f"Error in workflow: {e}")
+        # Create empty results file if workflow fails
+        with open(RESULTS_PATH, "w", encoding="utf-8") as f:
+            json.dump({"results": [], "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "error": str(e)}, f)
 
 
-# APScheduler setup (run every minute for testing)
+# APScheduler setup (run every 7 days automatically)
 scheduler = BackgroundScheduler()
-scheduler.add_job(run_and_store_weekly_results, "interval", minutes=1)
+scheduler.add_job(run_and_store_weekly_results, "interval", days=7)
 scheduler.start()
 
 # Run once at startup to ensure results exist
@@ -54,22 +68,42 @@ def get_weekly_ai_tools():
     """
     if os.path.exists(RESULTS_PATH):
         with open(RESULTS_PATH, "r", encoding="utf-8") as f:
-            return json.load(f)
+            data = json.load(f)
+        # Return the data as-is (includes metadata like last_updated)
+        return data
     else:
-        return {"results": []}
+        return {
+            "results": [], 
+            "last_updated": "Never", 
+            "total_tools": 0,
+            "message": "No tools data available. Try triggering a manual search."
+        }
 
 @app.post("/trigger-workflow")
 def trigger_workflow_manually():
     """
-    Manually trigger the workflow to search for AI tools.
+    Manually trigger the workflow to search for new AI tools.
     """
     try:
-        results = workflow.run()
-        with open(RESULTS_PATH, "w", encoding="utf-8") as f:
-            json.dump({"results": results}, f, ensure_ascii=False, indent=2)
-        return {"message": f"Workflow completed successfully. Found {len(results)} tools.", "results": results}
+        print("Manual workflow trigger initiated...")
+        run_and_store_weekly_results()
+        
+        # Read the results to return them
+        if os.path.exists(RESULTS_PATH):
+            with open(RESULTS_PATH, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            results = data.get("results", [])
+            last_updated = data.get("last_updated", "Unknown")
+            return {
+                "message": f"Manual search completed successfully! Found {len(results)} tools.", 
+                "results": results,
+                "last_updated": last_updated,
+                "total_tools": len(results)
+            }
+        else:
+            return {"message": "Workflow completed but no results file found.", "results": []}
     except Exception as e:
-        return {"error": str(e), "message": "Workflow failed"}
+        return {"error": str(e), "message": "Manual workflow failed"}
 
 @app.get("/debug-config")
 def debug_config():
