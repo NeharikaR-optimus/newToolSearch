@@ -1,19 +1,24 @@
 
 from fastapi import FastAPI, Request
 from pydantic import BaseModel
+import sys
+import os
+
+# Add the backend directory to Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from workflow.workflow import Workflow
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
 import json
-import os
 
 app = FastAPI()
 
-# Instantiate workflow with path to weekly_ai_tools.json
-JSON_PATH = os.path.join(os.path.dirname(__file__), "weekly_ai_tools.json")
+# Instantiate workflow with path to weekly_tech_tools.json
+JSON_PATH = os.path.join(os.path.dirname(__file__), "weekly_tech_tools.json")
 workflow = Workflow(top_n_tools=8)  # Increased from 5 to 8 for more developer tools
 
-RESULTS_PATH = os.path.join(os.path.dirname(__file__), "weekly_ai_tools.json")
+RESULTS_PATH = os.path.join(os.path.dirname(__file__), "weekly_tech_tools.json")
 
 def run_and_store_weekly_results():
     """Run workflow and store results with timestamp"""
@@ -56,8 +61,8 @@ scheduler = BackgroundScheduler()
 scheduler.add_job(run_and_store_weekly_results, "interval", days=7)
 scheduler.start()
 
-# Run once at startup to ensure results exist
-run_and_store_weekly_results()
+# Run once at startup to ensure results exist - commented out to prevent server blocking
+# run_and_store_weekly_results()
 
 class ChatRequest(BaseModel):
     message: str
@@ -65,22 +70,21 @@ class ChatRequest(BaseModel):
 
 @app.post("/chatbot")
 async def chatbot_endpoint(chat: ChatRequest):
-    user_message = chat.message
     results = workflow.run()
     if results:
         reply = results[0]["summary"]
     else:
-        reply = "Sorry, I couldn't find any new AI tools this week."
+        reply = "Sorry, I couldn't find any new tech tools this week."
     return {"reply": reply}
 
 @app.get("/")
 def read_root():
-    return {"message": "AI Tools Discovery API is running."}
+    return {"message": "Tech Tools Discovery API is running."}
 
-@app.get("/weekly-ai-tools")
-def get_weekly_ai_tools():
+@app.get("/weekly-tech-tools") 
+def get_weekly_tech_tools():
     """
-    Return the most recent weekly discovered AI tools and their summaries.
+    Return the most recent weekly discovered tech tools and their summaries.
     """
     if os.path.exists(RESULTS_PATH):
         with open(RESULTS_PATH, "r", encoding="utf-8") as f:
@@ -126,7 +130,10 @@ def debug_config():
     """
     Debug endpoint to check configuration and environment variables.
     """
-    import config
+    import sys
+    import os
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from backend import config
     return {
         "langsearch_api_key_set": bool(config.LANGSEARCH_API_KEY),
         "azure_openai_api_key_set": bool(config.AZURE_OPENAI_API_KEY),
@@ -134,23 +141,6 @@ def debug_config():
         "azure_openai_endpoint": config.AZURE_OPENAI_ENDPOINT,
         "results_file_exists": os.path.exists(RESULTS_PATH)
     }
-
-@app.get("/test-search")
-def test_search():
-    """
-    Debug endpoint to test the search agent directly.
-    """
-    try:
-        from tools.search_agent import SearchAgent
-        search_agent = SearchAgent()
-        results = search_agent.search_new_ai_tools()
-        return {
-            "search_results_count": len(results),
-            "search_results": results[:3] if results else [],  # Return first 3 for debugging
-            "raw_response_sample": str(results[0]) if results else "No results"
-        }
-    except Exception as e:
-        return {"error": str(e), "message": "Search test failed"}
 
 @app.get("/test-search")
 def test_search():

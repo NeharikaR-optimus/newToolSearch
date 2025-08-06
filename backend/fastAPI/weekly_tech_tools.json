@@ -1,0 +1,66 @@
+{
+  "results": [
+    {
+      "name": "Apidog",
+      "summary": "Apidog is a powerful API developer tool designed to enhance productivity and streamline workflows for developers and technical teams by simplifying API creation and management.",
+      "bullets": [
+        "Provides coding assistance with auto-completion and syntax highlighting for faster API development.",
+        "Streamlines the development workflow by enabling easy testing and debugging of APIs within the tool.",
+        "Offers extensive API capabilities, including documentation generation and version control for better collaboration.",
+        "Supports integration with popular development platforms and tools, enhancing flexibility and interoperability."
+      ],
+      "category": "AI Tool",
+      "website": "https://apidog.com/blog/api-developer-tool/"
+    },
+    {
+      "name": "GitHub Copilot",
+      "summary": "GitHub Copilot acts as an AI-powered pair programmer, enhancing developer productivity by providing real-time code suggestions within the editor, streamlining the coding process.",
+      "bullets": [
+        "Offers context-aware code suggestions, enabling faster coding and reducing the need to search for syntax or function usage.",
+        "Integrates seamlessly with popular editors like Visual Studio Code, ensuring smooth incorporation into existing development workflows.",
+        "Supports multiple programming languages, allowing developers to receive tailored recommendations no matter their tech stack.",
+        "Facilitates rapid prototyping and debugging by suggesting code snippets and functions, helping teams to iterate and develop features more efficiently."
+      ],
+      "category": "AI Tool",
+      "website": "https://github.com/features/copilot"
+    },
+    {
+      "name": "Tabnine",
+      "summary": "Tabnine is an AI-powered code assistant that enhances developer productivity by offering context-aware code completions tailored to individual coding patterns, enabling faster and more accurate coding.",
+      "bullets": [
+        "Provides whole-line and full-function code completions, reducing the time spent on coding and increasing accuracy.",
+        "Flexible deployment options allow developers to run AI completions locally, on private servers, or in the cloud, ensuring compliance with security requirements.",
+        "Seamless integration with popular IDEs and editors, making it easy to incorporate AI assistance into existing development workflows.",
+        "Supports multiple programming languages and learns from private repositories, ensuring suggestions align with specific coding standards and best practices."
+      ],
+      "category": "AI Tool",
+      "website": "https://www.smart-tools.ai/en/product/Tabnine"
+    },
+    {
+      "name": "DeepCode",
+      "summary": "DeepCode leverages AI to enhance code quality by providing intelligent suggestions and improvements, making it an essential tool for developers looking to streamline their coding process.",
+      "bullets": [
+        "AI-powered code analysis that identifies potential bugs and security vulnerabilities in real-time.",
+        "Integration with popular IDEs and version control systems to seamlessly fit into existing development workflows.",
+        "Support for multiple programming languages, allowing diverse teams to benefit from its capabilities.",
+        "Automated code reviews and suggestions that enhance productivity and reduce manual debugging efforts."
+      ],
+      "category": "AI Tool",
+      "website": "https://techcrunch.com/2018/04/26/deepcode-cleans-your-code-with-the-power-of-ai/"
+    },
+    {
+      "name": "Codota",
+      "summary": "Codota is an AI-powered coding assistant that enhances developer productivity by predicting the next lines of code, allowing for quicker and more efficient coding workflows.",
+      "bullets": [
+        "Code Prediction: Utilizes AI to anticipate and suggest the next lines of code, reducing time spent on syntax and logic.",
+        "Integration: Seamlessly integrates with popular IDEs, enhancing the developer's current environment without disrupting workflow.",
+        "Learning from Context: Analyzes existing code context to provide relevant suggestions, improving the accuracy of code predictions.",
+        "Increased Productivity: Streamlines coding tasks, enabling developers to focus on higher-level problem-solving rather than repetitive coding."
+      ],
+      "category": "AI Tool",
+      "website": "https://medium.com/@jimut.aich/codota-predict-your-next-set-of-code-using-ai-1f4364c46731"
+    }
+  ],
+  "last_updated": "2025-08-06 10:59:25",
+  "total_tools": 5
+}

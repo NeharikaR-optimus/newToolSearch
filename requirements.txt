@@ -1,7 +1,8 @@
-streamlit
-fastapi
-uvicorn
-requests
-pydantic
-langgraph
-langchain-openai
+streamlit>=1.47.0
+fastapi>=0.116.0
+uvicorn>=0.35.0
+requests>=2.32.0
+pydantic>=2.11.0
+langgraph>=0.5.0
+langchain-openai>=0.3.0
+apscheduler>=3.11.0

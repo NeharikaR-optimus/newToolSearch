@@ -1,12 +1,16 @@
 from typing import List
+import json
+import requests
+from bs4 import BeautifulSoup
 from .llm_summarizer import get_llm_tool_names_from_text
+import re
+from collections import Counter
+
 def extract_tool_names_llm(urls: List[str], timeout: int = 8) -> list:
     """
     Fetches all article texts, concatenates them, and uses a single LLM call to extract AI tool names.
     Returns a list of tool names.
     """
-    import requests
-    from bs4 import BeautifulSoup
     article_texts = []
     for url in urls:
         try:
@@ -22,9 +26,6 @@ def extract_tool_names_llm(urls: List[str], timeout: int = 8) -> list:
     if not combined_text.strip():
         return []
     return get_llm_tool_names_from_text(combined_text)
-import json
-from typing import List
-
 def extract_article_urls(json_path: str) -> List[str]:
     """
     Extracts all article URLs from the 'website' field in the weekly_ai_tools.json file.
@@ -35,11 +36,6 @@ def extract_article_urls(json_path: str) -> List[str]:
     urls = [item.get('website') for item in results if item.get('website')]
     return urls
 
-
-import requests
-from bs4 import BeautifulSoup
-import re
-from collections import Counter
 
 def extract_tool_names_from_articles(urls: List[str], timeout: int = 8) -> Counter:
     """
