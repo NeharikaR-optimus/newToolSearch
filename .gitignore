@@ -1,5 +1,7 @@
 # Environment Variables
 .env
+.env.local
+.env.*.local
 
 # Python
 __pycache__/
@@ -30,20 +32,36 @@ MANIFEST
 venv/
 env/
 ENV/
+.venv/
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+.spyderproject
+.spyproject
 
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # Logs
 *.log
+logs/
 
 # Cache and temp files
 *.tmp
+*.temp
+.cache/
+
+# Project specific
 weekly_tech_tools.json
+weekly_ai_tools.json
+debug_search.py
+validate_imports.py
+Dockerfile
+
+# FastAPI specific
+.pytest_cache/
